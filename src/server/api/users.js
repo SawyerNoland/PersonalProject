@@ -7,6 +7,7 @@ const {
     getUserByEmail
 } = require('../db');
 
+
 const jwt = require('jsonwebtoken')
 
 usersRouter.get('/', async( req, res, next) => {

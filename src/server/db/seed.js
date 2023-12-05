@@ -12,6 +12,7 @@ const users = [
     email: 'liu@example.com',
     password: 'strongpass',
   },
+  
   {
     name: 'Isabella García',
     email: 'bella@example.com',
