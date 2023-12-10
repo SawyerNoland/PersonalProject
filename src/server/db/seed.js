@@ -37,6 +37,15 @@ const users = [
   // Add more user objects as needed
 ];  
 
+const products = [{
+  id: 1,
+  title: 'b-series universal turbo kit',
+  price: 899.99,
+  description: 'A universal turbo kit that fits all b-series engines.',
+  manufacturer: 'Rev9',
+  
+},]
+
 const dropTables = async () => {
     try {
         await db.query(`
