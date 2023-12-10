@@ -1,77 +1,68 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+function Login({token ,setToken}) {
+  const [email, setEmail] =useState("")
+  const [password, setPassword] =useState("")
+  const navigation = useNavigate();
 
-  
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
+  async function handleSubmit(e) {
+    e.preventDefualt();
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const login = async() => {
     try {
-        const response = await fetch('http://localhost:3000/api/users/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            }, 
-            body: JSON.stringify({
-                email,
-                password
-            })
-        });
-        const result = await response.json();
-        setMessage(result.message);
-        if(!response.ok) {
-          throw(result)
-        }
-        setEmail('');
-        setPassword('');
-    } catch (err) {
-        console.error(`${err.name}: ${err.message}`);
+      const response = await fetch('http://localhost:5432/project/login', {
+        method: "POST",
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+          email, password,
+        })
+      });
+
+      const result = await response.json()
+      setToken(result)
+
+      localStorage.setItem("token", result.user.id);
+      console.log(token);
+      console.log(result);
+      // see what the outcome is for both token and result for testing to see if its correct and matching
+
+      // if its successful the user will be navigated to home 
+      navigation('/')
+      return result;
+
+    } catch (error) {
+      console.log('error at handle submit', error);
     }
   }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    login();
-  };
-
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='email'>Email:</label>
-          <input
-            type='email'
-            id='email'
-            value={email}
-            onChange={handleEmailChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor='password'>Password:</label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            onChange={handlePasswordChange}
-            required
-          />
-        </div>
-        <button type='submit'>Login</button>
-      </form>
-      <p>{message}</p>
-    </div>
+    <>
+    <h2 className='signUpH2'>Login</h2>
+    <br />
+    <form onSubmit={handleSubmit}>
+    <label>
+        Email: <input type="email"
+        className="input"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+        />
+      </label>
+      <label>
+        Password: <input type="password"
+        className="input"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+        />
+      </label>
+      <button className='button' onClick={handleSubmit}>Login</button>
+      <br />
+      <p className="bottom-p">Dont have an account? <a href="/register">Register here</a></p>
+    </form>
+    </>
   );
-};
+}
 
 export default Login;
