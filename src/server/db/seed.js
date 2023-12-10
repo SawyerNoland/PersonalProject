@@ -1,5 +1,6 @@
 const db = require('./client');
 const { createUser } = require('./users');
+const {createProduct} = require('./products')
 
 const users = [
   {
@@ -27,6 +28,11 @@ const users = [
     name: 'John Smith',
     email: 'john@example.com',
     password: 'password123',
+  },
+  {
+    name: 'admin',
+    email: 'admin@admin.com',
+    password: 'adminadmin',
   },
   // Add more user objects as needed
 ];  

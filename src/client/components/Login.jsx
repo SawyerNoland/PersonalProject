@@ -1,68 +1,69 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-function Login({token ,setToken}) {
-  const [email, setEmail] =useState("")
-  const [password, setPassword] =useState("")
-  const navigation = useNavigate();
+function LogIn({ token, setToken }) {
+  // Define state variables for email, password, and navigation
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
-    e.preventDefualt();
-
+    e.preventDefault();
+    
     try {
-      const response = await fetch('http://localhost:5432/project/login', {
+      // Send a POST request to the login API endpoint
+      const response = await fetch('http://localhost:3000/api/users/login', {
         method: "POST",
-        headers: {'Content-Type' : 'application/json'},
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          email, password,
+          email,
+          password,
         })
       });
 
-      const result = await response.json()
-      setToken(result)
+      // Parse the response as JSON
+      const result = await response.json();
+      
+      // Update the token state with the result
+      setToken(result);
 
+      // Store the user's ID in localStorage
       localStorage.setItem("token", result.user.id);
+
+      // Log the token, result, and navigate to the home page
       console.log(token);
       console.log(result);
-      // see what the outcome is for both token and result for testing to see if its correct and matching
-
-      // if its successful the user will be navigated to home 
-      navigation('/')
+      navigate('/');
+      
+      // Return the result (optional)
       return result;
-
     } catch (error) {
-      console.log('error at handle submit', error);
+      // Handle errors by logging them
+      console.error(error);
     }
   }
+
+  // Render the login form
   return (
     <>
-    <h2 className='signUpH2'>Login</h2>
-    <br />
-    <form onSubmit={handleSubmit}>
-    <label>
-        Email: <input type="email"
-        className="input"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-        />
-      </label>
-      <label>
-        Password: <input type="password"
-        className="input"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-        />
-      </label>
-      <button className='button' onClick={handleSubmit}>Login</button>
-      <br />
-      <p className="bottom-p">Dont have an account? <a href="/register">Register here</a></p>
-    </form>
+      <h2 className="Sign-In">Please log in!</h2>
+      <form className='styleForm' onSubmit={handleSubmit}>
+        <label>
+          Email: <input className='input' value={email} type="text" onChange={(e) => setEmail(e.target.value)} required />
+        </label>
+        <br />
+        <label>
+          Password: <input className='input' type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </label>
+        <button className='button' type="submit">Log In</button>
+        <p className='href'>Don't have an account?<a href="./register"> Sign Up</a> </p>
+        <a href="/">Home</a>
+      </form>
     </>
   );
 }
 
-export default Login;
+// Export the LogIn component as the default export
+export default LogIn;

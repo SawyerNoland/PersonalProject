@@ -1,6 +1,7 @@
 const db = require('./client')
 const bcrypt = require('bcrypt');
 const SALT_COUNT = 10;
+// import { useEffect, useState } from 'react';
 
 const createUser = async({ name='first last', email, password }) => {
     const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
@@ -16,6 +17,7 @@ const createUser = async({ name='first last', email, password }) => {
         throw err;
     }
 }
+
 
 
 const getUser = async({email, password}) => {
@@ -35,6 +37,18 @@ const getUser = async({email, password}) => {
     }
 }
 
+
+const getAllUsers = async() => {
+    try {
+        const { rows } = await db.query(`
+        SELECT *
+        FROM users;`);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const getUserByEmail = async(email) => {
     try {
         const { rows: [ user ] } = await db.query(`
@@ -51,8 +65,35 @@ const getUserByEmail = async(email) => {
     }
 }
 
+
+
+// Get user by ID
+async function getUserById(id) {
+    try {
+      const { rows: [ users ]  } = await db.query(`
+        SELECT *
+        FROM users
+        WHERE id=$1;
+      `, [id]);
+  
+      if (!users) {
+        throw {
+          name: "WineNotFoundError",
+          message: "Could not find a wine with that wineId"
+        };
+      }
+  
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
 module.exports = {
     createUser,
     getUser,
-    getUserByEmail
+    getAllUsers,
+    getUserByEmail,
+    getUserById
 };

@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-const SignUpForm = ({setToken}) => {
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
+const SignUpForm = ({ setToken }) => {
+  // Define state variables for name, password, email, and navigation
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -12,103 +13,119 @@ const SignUpForm = ({setToken}) => {
 
     const fetchToken = async (name, email, password) => {
       try {
-        // send a post request to our register end point to sign a new user up
-        const response = await fetch('http://localhost:5432/project/register', {
-          method: 'POST', 
+        // Send a POST request to the registration API endpoint
+        const response = await fetch('http://localhost:3000/api/users/register', {
+          method: "POST",
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             name,
+            email,
             password,
-            email
           })
         });
+        // Parse the response as JSON
+        const result = await response.json();
+        console.log(result);
 
-      // Send response as Json
-      const result = await response.json();
-      console.log(result);
+        // Check if the registration was successful
+        if (response.ok) {
+          // Clear the input fields
+          setName("");
+          setEmail("");
+          setPassword("");
 
-      if (response.ok) {
-        setName("");
-        setPassword("");
-        setEmail("");
-      }
+          // Sign in the user after successful registration
+          const signInResponse = await fetch('http://localhost:3000/api/users/login', {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            })
+          });
 
-      // after a user is signed up for the first time there will be a subsequent post request to the login page so they dont have to go and login after signing up
+          // Check if the sign-in was successful
+          if (!signInResponse.ok) {
+            // Handle sign-in error
+            const signInError = await signInResponse.json();
+            console.error('Sign-in failed:', signInError);
+            return;
+          }
 
-      const signInResponse = await fetch('http://localhost:5432/project/login', {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        })
-      });
+          // Parse the sign-in response as JSON
+          const signInResult = await signInResponse.json();
+          console.log(signInResult);
 
-      // check if sign in response worked 
-      if (!signInResponse.ok) {
-        const signInError = await signInResponse.json();
-        console.log('there was an issue signing up:',signInError);
+          // Store the user's ID in localStorage and update the token state
+          localStorage.setItem("token", signInResult.user.id);
+          setToken(signInResult);
 
-        const signInResult = await signInResponse.json();
-        console.log(signInResult);
-
-          // set the users token in local storage
-          // will be used later to conditionally render items to users v.s. admins
-        localStorage.setItem("token", signInResult.user.id);
-        setToken(signInResult);
-
-        // redirection to home page after sign up
-        navigate('/')
-      }
+          // Redirect to the homepage after successful sign-up and sign-in
+          navigate('/');
+        } else {
+          // Handle registration error
+          console.error('Registration failed:', result);
+        }
       } catch (error) {
-        console.log('uh oh there was an error fetching token', error);
+        // Handle unexpected errors
+        console.error('An unexpected error occurred:', error);
       }
     }
-    fetchToken(name, email, password)
+
+    // Call the nested function to fetch the token
+    fetchToken(name, email, password);
   }
 
-  // what to be rendered below
+  // Render the registration form
   return (
     <>
-    <h2 className="signUpH2">Sign Up</h2>
-    <form onSubmit={handleSubmit}>
-    <label>
-        Email: <input type="email"
-        className="input"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Please enter your email"
-        required
-        />
-      </label>
-      <label>
-        Name: <input type="text"
-        className="input"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Please enter your name"
-        required
-        />
-      </label>
-      <label>
-        Password: <input type="password"
-        className="input"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter a password"
-        required
-        />
-      </label>
-      <br />
-      <button className="button" type="submit">Sign Up</button>
-      <p className="bottom-p">Already have an account?<a href="/login">Login</a></p>
-    </form>
+      <h2 className="Sign-In">
+        Register below!<br />
+      </h2>
+      <form className='styleForm' onSubmit={handleSubmit}>
+        <label>
+          Name: <input
+            className='input'
+            value={name} type="text"
+            onChange={(e) => setName(e.target.value)}
+            minLength={3}
+            placeholder="Enter your name"
+            required />
+        </label>
+        <br />
+        <label>
+          Email: <input
+            className='input'
+            value={email}
+            type="text"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required />
+        </label>
+        <br />
+        <label>
+          Password: <input
+            className='input'
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={9}
+            placeholder="Enter your password"
+            required />
+        </label>
+        <br />
+        <button className='button' type="submit">Sign Up</button>
+        <p>Already have an account?<br />
+          <a href="./login">Sign In</a> </p>
+        <a href="/">Home</a>
+      </form>
     </>
   )
 }
 
+// Export the SignUpForm component as the default export
 export default SignUpForm;

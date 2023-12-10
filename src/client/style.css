@@ -4,8 +4,13 @@
   align-items: center;
   justify-content: center;
   height: 100vh; 
+  background-color: rgb(150, 144, 144);
 }
 
+a {
+  text-decoration: none;
+  color: rgb(39, 39, 83);
+}
 
 .App-header {
   margin-bottom: 20px;

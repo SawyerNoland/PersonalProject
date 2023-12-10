@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
-
-
+import Home from "./components/Home";
 
 function App() {
   const [token, setToken] = useState([]);
@@ -25,6 +24,7 @@ function App() {
     <div className='App'>
         <BrowserRouter>
         <Routes>
+        <Route path="/" element={<Home/>}/>
         <Route path='/register' element={<Register token={token} setToken={setToken}/>}/>
         <Route path='/login' element={<Login token={token} setToken={setToken}/>}/>
         </Routes>
