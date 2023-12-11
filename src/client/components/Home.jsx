@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import Logout from "./Logout";
 import { useNavigate } from "react-router-dom";
+
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate= useNavigate
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if there is a token with a number in local storage
@@ -18,6 +21,20 @@ const Home = () => {
     }
   }, []);
 
+  useEffect(() => {
+    async function getAllProducts() {
+      try {
+        const response = await fetch("http://localhost:3000/api/products");
+        const result = await response.json(); // Await the Promise
+        console.log(result);
+        setProducts(result);
+      } catch (error) {
+        setError(error);
+      }
+    }
+    getAllProducts();
+  }, []);
+
   return (
     <>
       {isLoggedIn ? (
@@ -28,11 +45,32 @@ const Home = () => {
         </>
       ) : (
         <>
-          <a href="/login">Login</a>
+          <a className="button" href="/login">
+            Login
+          </a>
         </>
       )}
-
-      <p>home</p>
+      <div className="allProductsCard">
+        {!error &&
+          products.map((product) => (
+            <div className="product-card" key={product.id}>
+              <img
+                src={product.img}
+                alt="there should be an img here, whoops!"
+              />
+              <p className="product-card">{product.title}</p>
+              <p className="product-card">${product.price}</p>
+              <button
+                className="button"
+                onClick={() => {
+                  navigate(`/${product.id}`);
+                }}
+              >
+                View Product
+              </button>
+            </div>
+          ))}
+      </div>
     </>
   );
 };

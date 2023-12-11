@@ -49,17 +49,20 @@ apiRouter.use(async (req, res, next) => {
   
   apiRouter.use((req, res, next) => {
     if (req.user) {
-      console.log('User is set:', req.user);
+        console.log('User is set:', req.user);
     }
-  
     next();
-  });
+});
+
 
 const usersRouter = require('./users');
 apiRouter.use('/users', usersRouter);
 
+const productsRouter = require('./products');
+apiRouter.use('/products', productsRouter);
+
 apiRouter.use((err, req, res, next) => {
-    res.status(500).send(err)
-  })
+  res.status(500).json({ error: { name: err.name, message: err.message } });
+});
 
 module.exports = apiRouter

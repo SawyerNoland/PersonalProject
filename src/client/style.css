@@ -4,12 +4,11 @@
   align-items: center;
   justify-content: center;
   height: 100vh; 
-  background-color: rgb(150, 144, 144);
 }
 
 a {
   text-decoration: none;
-  color: rgb(39, 39, 83);
+  color: rgb(0, 0, 0);
 }
 
 .App-header {
@@ -19,6 +18,12 @@ a {
 
 #comp-img{
   width: 250px;
+}
+
+img {
+  max-width: 200px;
+  max-height: 200px;
+  margin: 10px auto;
 }
 
 /* Add more styling for other elements if needed */
